@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- 城市名称 -->
+    <TextView
+        android:id="@+id/tv_weather_city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="City: 该位置没有天气信息"
+        android:textSize="20sp" />
+
+    <!-- 标题栏 -->
+    <TextView
+        android:id="@+id/tv_weather_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="当前天气情况"
+        android:textSize="24sp" />
+
+    <!-- 天气图标 -->
+    <!--<ImageView
+        android:id="@+id/iv_weather_icon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+     &lt;!&ndash;   android:src="@drawable/ic_weather_sunny"&ndash;&gt;
+        android:contentDescription="Weather Icon"/>-->
+
+    <!-- 天气描述 -->
+    <TextView
+        android:id="@+id/tv_weather_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="Sunny"
+        android:textSize="18sp" />
+
+    <!-- 温度显示 -->
+    <TextView
+        android:id="@+id/tv_temperature"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="25°C"
+        android:textSize="24sp" />
+
+    <!-- 其他天气信息 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <!-- 风速 -->
+        <TextView
+            android:id="@+id/tv_wind_speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wind: 10 km/h"
+            android:textSize="16sp" />
+
+        <!-- 湿度 -->
+        <TextView
+            android:id="@+id/tv_humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Humidity: 70%"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_publish_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="Published: June 6, 2024, 10:00 AM"
+        android:textSize="16sp" />
+    <!-- 天气预报 -->
+    <ListView
+        android:id="@+id/lv_weather_forecast"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@null"
+        android:dividerHeight="0dp" />
+</LinearLayout>
+

@@ -1,0 +1,1 @@
+{"itemList":[{"showTop":0,"frameDuration":70,"showUtilFinish":1,"height":640,"frames":68,"width":360,"folderName":"zhibo","looping":1,"type":"V","triggerType":2}]}

@@ -1,0 +1,70 @@
+pluginManagement {
+    /*repositories {
+       *//* maven { url 'https://maven.aliyun.com/repository/public'}
+        maven { url 'https://maven.aliyun.com/repository/google'}
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin'}
+
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()*//*
+
+        maven { url 'https://jitpack.io' }
+        jcenter()
+       *//* google()
+        mavenCentral()*//*
+
+        maven { url 'https://developer.huawei.com/repo/' }
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }*/
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' } // 添加 JitPack 仓库
+        maven { url 'https://developer.huawei.com/repo/' }
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+   /* repositories {
+        // JitPack 远程仓库：https://jitpack.io
+
+
+        maven { url 'https://jitpack.io' }
+        jcenter()
+       *//* google()
+        mavenCentral()*//*
+
+
+        maven { url 'https://developer.huawei.com/repo/' }
+        google()
+        mavenCentral()
+    }*/
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' } // 添加 JitPack 仓库
+        maven { url 'https://developer.huawei.com/repo/' }
+        gradlePluginPortal()
+    }
+}
+// settings.gradle
+rootProject.name = "My Application"
+include ':app'
+
+include ':omoshiroilib'
+include ':stmobile'
+
+include ':chatgpt'
+include ':asr_core'
+include ':tastytoast'

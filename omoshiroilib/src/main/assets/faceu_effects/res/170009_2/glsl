@@ -1,0 +1,289 @@
+//snakeface
+precision highp float;
+varying lowp vec2 textureCoordinate;
+
+uniform sampler2D inputImageTexture;
+uniform sampler2D inputImageTexture2;//chaplin
+uniform sampler2D inputImageTexture3;//chaplina
+uniform sampler2D inputImageTexture4;//exchangeface2D
+
+
+uniform lowp vec2 location0; // p_eyeRight
+uniform lowp vec2 location1; // p_eyeLeft
+uniform lowp vec2 location2; // p_browRight
+uniform lowp vec2 location3; // p_browLeft
+uniform lowp vec2 location4; // p_noseTip
+uniform lowp vec2 location5; // p_noseLeg
+uniform lowp vec2 location6; // p_mouthRight
+uniform lowp vec2 location7; // p_mouthLeft
+uniform lowp vec2 location8; // p_mouthTop
+uniform lowp vec2 location9; // p_mouthBottom
+uniform lowp vec2 location10;// p_chin
+uniform lowp vec2 location11;// p_faceRight1
+uniform lowp vec2 location12;// p_faceLeft1
+uniform lowp vec2 location13;// p_faceRight2
+uniform lowp vec2 location14;// p_faceLeft2
+uniform lowp vec2 location15;// p_faceRight3
+uniform lowp vec2 location16;// p_faceLeft3
+uniform lowp vec2 location17;// p_faceRight4
+uniform lowp vec2 location18;// p_faceLeft4
+uniform lowp vec2 location19;// p_faceRight5
+uniform lowp vec2 location20;// p_faceLeft5
+uniform lowp vec2 location21;// p_faceRight6
+uniform lowp vec2 location22;// p_faceLeft6
+uniform lowp vec2 location23;// p_faceRight7
+uniform lowp vec2 location24;// p_faceLeft7
+
+
+
+uniform lowp vec2 angle0;
+
+uniform int m_orientation;
+uniform bool isAndroid;
+
+
+vec4 blendNormal(vec4 c1, vec4 c2) {
+vec4 outputColor;
+outputColor.r = c1.r + c2.r * c2.a * (1.0 - c1.a);
+outputColor.g = c1.g + c2.g * c2.a * (1.0 - c1.a);
+outputColor.b = c1.b + c2.b * c2.a * (1.0 - c1.a);
+outputColor.a = c1.a + c2.a * (1.0 - c1.a);
+return outputColor;
+}
+
+
+vec2 flowAway(vec2 realCoord, vec2 scrSize, vec2 facePoint, vec2 angle, vec2 weiyi, vec2 faceSize, vec2 pngSize, float radius, float amp, vec2 originPosition)
+{
+vec2 facePointA = facePoint * scrSize;
+vec2 facePointAfter = vec2(0.0);
+facePointAfter.x = angle.y * facePointA.x + angle.x * facePointA.y;
+facePointAfter.y = angle.y * facePointA.y - angle.x * facePointA.x;
+facePointAfter += weiyi;
+facePointAfter /= faceSize;
+
+vec2 direction = facePointAfter - originPosition;
+float lengthA = length(direction);
+float lengthB = min(lengthA, radius);
+direction *= amp * lengthB / lengthA;
+float infect = distance(realCoord*pngSize,originPosition*pngSize)/radius;
+infect = clamp(1.0-infect, 0.0, 1.0);
+infect  = pow(infect, 2.0);
+
+return direction * infect;
+}
+
+vec2 faceStretch(vec2 textureCoord, vec2 originPosition, vec2 targetPosition, float radius, float amp, float curve)
+{
+vec2 direction = targetPosition - originPosition;
+float lengthA = length(direction);
+float lengthB = min(lengthA, radius);
+direction *= amp * lengthB / lengthA;
+float infect = distance(textureCoord, originPosition)/radius;
+infect = clamp(1.0-infect,0.0,1.0);
+infect = pow(infect, curve);
+
+return direction * infect;
+}
+
+/*
+vec3 sharpColor(vec3 inputColor, float sharpness, vec2 textureCoord)
+{
+vec3 sampleColor;
+
+vec2 blurCoordinates[12];
+
+float mul = 0.1;
+
+float mul_x = mul / 720.0;
+float mul_y = mul / 1280.0;
+
+blurCoordinates[0] = textureCoord + vec2(0.0 * mul_x,-10.0 * mul_y);
+blurCoordinates[1] = textureCoord + vec2(5.0 * mul_x,-8.0 * mul_y);
+blurCoordinates[2] = textureCoord + vec2(8.0 * mul_x,-5.0 * mul_y);
+blurCoordinates[3] = textureCoord + vec2(10.0 * mul_x,0.0 * mul_y);
+blurCoordinates[4] = textureCoord + vec2(8.0 * mul_x,5.0 * mul_y);
+blurCoordinates[5] = textureCoord + vec2(5.0 * mul_x,8.0 * mul_y);
+blurCoordinates[6] = textureCoord + vec2(0.0 * mul_x,10.0 * mul_y);
+blurCoordinates[7] = textureCoord + vec2(-5.0 * mul_x,8.0 * mul_y);
+blurCoordinates[8] = textureCoord + vec2(-8.0 * mul_x,5.0 * mul_y);
+blurCoordinates[9] = textureCoord + vec2(-10.0 * mul_x,0.0 * mul_y);
+blurCoordinates[10] = textureCoord + vec2(-8.0 * mul_x,-5.0 * mul_y);
+blurCoordinates[11] = textureCoord + vec2(-5.0 * mul_x,-8.0 * mul_y);
+
+sampleColor = texture2D(inputImageTexture, textureCoord).rgb * 20.0;
+
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[0]).rgb;
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[1]).rgb;
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[2]).rgb;
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[3]).rgb;
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[4]).rgb;
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[5]).rgb;
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[6]).rgb;
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[7]).rgb;
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[8]).rgb;
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[9]).rgb;
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[10]).rgb;
+sampleColor -= texture2D(inputImageTexture, blurCoordinates[11]).rgb;
+
+sampleColor /= 8.0;
+
+float hue = texture2D(inputImageTexture, textureCoordinate).r;
+hue = pow(hue, 1.2);
+
+vec3 texel = texture2D(inputImageTexture, textureCoordinate).rgb;
+texel = mix(texel,sampleColor,1.0-hue);
+
+}
+*/
+
+
+void main(){
+
+gl_FragColor = texture2D(inputImageTexture,textureCoordinate);
+
+if(location0.x < 0.01 && location1.x < 0.01)
+{
+gl_FragColor = texture2D(inputImageTexture,textureCoordinate);
+return;
+}
+
+
+float x_axis = 720.0;
+float y_axis = 1280.0;
+
+
+vec2 textureCoord = vec2(textureCoordinate.x * x_axis, textureCoordinate.y * y_axis);
+//==========
+float faceWidth = distance(vec2(location0.x * x_axis, location0.y * y_axis), vec2(location1.x * x_axis, location1.y * y_axis));
+vec2 centerPoint = vec2(location9.x * x_axis, location9.y * y_axis);
+vec2 centerPoint2 = vec2(location8.x * x_axis, location8.y * y_axis);
+
+vec2 targetLeft = vec2(location12.x * x_axis, location10.y * y_axis);
+vec2 targetRight = vec2(location11.x * x_axis, location10.y * y_axis);
+
+vec2 targetLeft0 = vec2(location12.x * x_axis, location10.y * y_axis);
+vec2 targetRight0 = vec2(location11.x * x_axis, location10.y * y_axis);
+float radius = 100.0;
+float amp = 1.0;
+
+
+radius = faceWidth*1.5;
+vec2 faceLeft5 = vec2(location18.x*x_axis, location18.y*y_axis);
+targetLeft = centerPoint + (faceLeft5 - centerPoint) * 0.8;
+vec2 vectorfaceLeft5 = faceStretch(textureCoord, faceLeft5, targetLeft, radius, amp, 2.0);
+vec2 faceRight5 = vec2(location17.x*x_axis, location17.y*y_axis);
+targetRight = centerPoint + (faceRight5 - centerPoint) * 0.8;
+vec2 vectorfaceRight5 = faceStretch(textureCoord, faceRight5, targetRight, radius, amp, 2.0);
+
+
+vec2 faceLeft54 = vec2(location14.x*x_axis, location14.y*y_axis);
+targetLeft = centerPoint + (faceLeft54 - centerPoint) * 0.93;
+vec2 vectorfaceLeft54 = faceStretch(textureCoord, faceLeft54, targetLeft, radius, amp, 2.0);
+vec2 faceRight54 = vec2(location13.x*x_axis, location13.y*y_axis);
+targetRight = centerPoint + (faceRight54 - centerPoint) * 0.93;
+vec2 vectorfaceRight54 = faceStretch(textureCoord, faceRight54, targetRight, radius, amp, 2.0);
+
+/*
+radius = faceWidth*0.7;
+vec2 faceLeftplus5 = targetLeft;
+targetLeft = centerPoint + (faceLeft5 - centerPoint) * 0.8;
+vec2 vectorfaceLeftplus5 = faceStretch(textureCoord, faceLeftplus5, targetLeft, radius, amp, 3.0);
+vec2 faceRightplus5 = targetRight;
+targetRight = centerPoint + (faceRight5 - centerPoint) * 0.8;
+vec2 vectorfaceRightplus5 = faceStretch(textureCoord, faceRightplus5, targetRight, radius, amp, 3.0);
+
+radius = faceWidth*1.1;
+vec2 faceLeftplus6 = targetLeft;
+targetLeft = centerPoint + (faceLeft5 - centerPoint) * 0.8;
+vec2 vectorfaceLeftplus6 = faceStretch(textureCoord, faceLeftplus6, targetLeft, radius, amp, 3.3);
+vec2 faceRightplus6 = targetRight;
+targetRight = centerPoint + (faceRight5 - centerPoint) * 0.8;
+vec2 vectorfaceRightplus6 = faceStretch(textureCoord, faceRightplus6, targetRight, radius, amp,3.3);
+*/
+
+radius = faceWidth*1.0;
+vec2 chin = vec2(location10.x * x_axis, location10.y * y_axis);;
+vec2 targetchin = centerPoint + (chin - centerPoint) * 1.1;
+vec2 chinplus = faceStretch(textureCoord, chin, targetchin, radius, amp, 2.0);
+
+
+radius = faceWidth*1.3;
+vec2 faceLeftplus7 = vec2(location22.x*x_axis, location22.y*y_axis);
+targetLeft = centerPoint + (faceLeftplus7 - centerPoint) * 0.9;
+vec2 vectorfaceLeftplus7 = faceStretch(textureCoord, faceLeftplus7, targetLeft, radius, amp, 2.0);
+vec2 faceRightplus7 = vec2(location21.x*x_axis, location21.y*y_axis);
+targetRight = centerPoint + (faceRightplus7 - centerPoint) * 0.9;
+vec2 vectorfaceRightplus7 = faceStretch(textureCoord, faceRightplus7, targetRight, radius, amp,2.0);
+
+/*
+vec2 faceLeftplus77 = vec2(location20.x*x_axis, location20.y*y_axis);
+targetLeft = centerPoint + (faceLeftplus77 - centerPoint) * 0.8;
+vec2 vectorfaceLeftplus77 = faceStretch(textureCoord, faceLeftplus77, targetLeft, radius, amp, 2.0);
+vec2 faceRightplus77 = vec2(location19.x*x_axis, location19.y*y_axis);
+targetRight = centerPoint + (faceRightplus77 - centerPoint) * 0.8;
+vec2 vectorfaceRightplus77 = faceStretch(textureCoord, faceRightplus77, targetRight, radius, amp,2.0);
+*/
+
+radius = faceWidth*1.2;
+vec2 faceLeftplus8 = vec2(location1.x*x_axis, location1.y*y_axis);
+vec2 faceLeftplus9 = centerPoint2 + (faceLeftplus8 - centerPoint2) * 2.2;
+targetLeft = centerPoint2 + (faceLeftplus8 - centerPoint2) * 2.4;
+vec2 vectorfaceLeftplus9 = faceStretch(textureCoord, faceLeftplus9, targetLeft, radius, amp, 2.0);
+vec2 faceRightplus8 = vec2(location0.x*x_axis, location0.y*y_axis);
+vec2 faceRightplus9 = centerPoint2 + (faceRightplus8 - centerPoint2) * 2.2;
+targetRight = centerPoint2 + (faceRightplus8 - centerPoint2) * 2.4;
+vec2 vectorfaceRightplus9 = faceStretch(textureCoord, faceRightplus9, targetRight, radius, amp,2.0);
+
+
+//==========
+radius = faceWidth*0.23;
+float a = 0.8;
+vec2 diffusePosition = vec2(location0.x*x_axis, location0.y*y_axis);
+float infect3 = distance(textureCoord, diffusePosition)/radius;
+infect3 = clamp(infect3,0.0,1.0);
+infect3 = a * infect3 * (infect3 - 1.0) + 1.0;
+//==========
+vec2 diffusePosition2 = vec2(location1.x*x_axis, location1.y*y_axis);
+float infect4 = distance(textureCoord, diffusePosition2)/radius;
+infect4 = clamp(infect4,0.0,1.0);
+infect4 = a * infect4 * (infect4 - 1.0) + 1.0;
+//==========
+
+
+
+//====================================
+vec2 textureCoord_new = textureCoord - vectorfaceLeft5;
+textureCoord_new = textureCoord_new - vectorfaceRight5;
+//textureCoord_new = textureCoord_new - vectorfaceLeftplus5;
+//textureCoord_new = textureCoord_new - vectorfaceRightplus5;
+//textureCoord_new = textureCoord_new - vectorfaceLeftplus6;
+//textureCoord_new = textureCoord_new - vectorfaceRightplus6;
+textureCoord_new = textureCoord_new - chinplus;
+
+textureCoord_new = textureCoord_new - vectorfaceLeft54;
+textureCoord_new = textureCoord_new - vectorfaceRight54;
+
+textureCoord_new = textureCoord_new - vectorfaceLeftplus7;
+textureCoord_new = textureCoord_new - vectorfaceRightplus7;
+
+
+//textureCoord_new = textureCoord_new - vectorfaceLeftplus9;
+//textureCoord_new = textureCoord_new - vectorfaceRightplus9;
+
+textureCoord_new = diffusePosition + (textureCoord_new - diffusePosition)*infect3;
+textureCoord_new = diffusePosition2 + (textureCoord_new - diffusePosition2)*infect4;
+
+vec2 coordUse = vec2(textureCoord_new.x / x_axis, textureCoord_new.y / y_axis);
+gl_FragColor = texture2D(inputImageTexture,coordUse);
+
+/*
+if(distance(diffusePosition, textureCoord)< 10.0)
+gl_FragColor = vec4(1.0,1.0,0.0,1.0);
+if(distance(diffusePosition2, textureCoord)< 10.0)
+gl_FragColor = vec4(1.0,1.0,0.0,1.0);
+*/
+//====================================
+
+
+}
+

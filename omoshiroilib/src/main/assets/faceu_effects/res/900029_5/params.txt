@@ -1,0 +1,78 @@
+{
+    "filterlist": [
+        {
+            "data": {
+                "audio": "",
+                "soundPlayMode": 0,
+                "foldername": "strongman",
+                "maxcount": 2,
+                "pointindexarray": [
+                    [
+                        74,
+                        77,
+                        84,
+                        90,
+                        43,
+                        46,
+                        49,
+                        82,
+                        83,
+                        9,
+                        23,
+                        16,
+                        45
+                    ],
+                    [
+                        74,
+                        77,
+                        84,
+                        90,
+                        43,
+                        46,
+                        49,
+                        82,
+                        83,
+                        9,
+                        23,
+                        16,
+                        45
+                    ]
+                ],
+                "reslist": [],
+                "resloadtype": 0,
+                "timeparam": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "triggerType": 2
+            },
+            "name": "strongman",
+            "reload": 1,
+            "type": "shapechange"
+        }
+    ],
+    "initsection": "smallmouth",
+    "sections": [
+        {
+            "duration": -1,
+            "filterlist": [
+                "strongman"
+            ],
+            "sectionname": "smallmouth",
+            "tips": ""
+        }
+    ],
+    "statemachine": [
+        {
+            "oldsection": "smallmouth",
+            "triggerType": 1111,
+            "newsection": "smallmouth"
+        }
+    ]
+}
